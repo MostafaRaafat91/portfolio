@@ -824,6 +824,122 @@
             color: var(--primary-200);
         }
 
+        /* Profile Picture Position Editor (Admin Section) */
+        .profile-editor {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 600px;
+            background: rgba(10, 10, 10, 0.9);
+            border-radius: var(--radius-2xl);
+            padding: var(--space-xl);
+            box-shadow: var(--shadow-2xl);
+            z-index: 2000;
+            display: none;
+        }
+
+        .editor-panel {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .editor-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-md);
+            margin-top: var(--space-md);
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .control-group label {
+            font-size: 0.875rem;
+            color: var(--primary-200);
+            margin-bottom: var(--space-xs);
+        }
+
+        .control-group input {
+            -webkit-appearance: none;
+            appearance: none;
+            height: 8px;
+            border-radius: var(--radius-lg);
+            background: var(--primary-800);
+            outline: none;
+            transition: background 0.3s ease;
+        }
+
+        .control-group input::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--accent-purple);
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .control-group input:active::-webkit-slider-thumb {
+            transform: scale(1.2);
+        }
+
+        .control-group span {
+            font-size: 0.875rem;
+            color: var(--primary-100);
+            margin-top: var(--space-xs);
+        }
+
+        .control-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: var(--space-md);
+            margin-top: var(--space-lg);
+        }
+
+        .control-buttons button {
+            padding: var(--space-sm) var(--space-md);
+            border-radius: var(--radius-lg);
+            font-weight: 500;
+            font-size: 0.875rem;
+            color: var(--primary-50);
+            background: var(--accent-purple);
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .control-buttons button:hover {
+            background: var(--accent-blue);
+        }
+
+        /* Toggle Button for Admin Editor */
+        .admin-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 2000;
+        }
+
+        .admin-toggle button {
+            background: var(--gradient-accent);
+            color: var(--primary-950);
+            border: none;
+            border-radius: var(--radius-full);
+            padding: var(--space-sm);
+            cursor: pointer;
+            font-size: 1.25rem;
+            transition: background 0.3s ease;
+        }
+
+        .admin-toggle button:hover {
+            background: var(--accent-blue);
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .hero-grid,
@@ -861,6 +977,11 @@
 
             .section {
                 padding: var(--space-3xl) 0;
+            }
+
+            .editor-panel {
+                width: 100%;
+                padding: var(--space-md);
             }
         }
 
@@ -917,6 +1038,50 @@
     </style>
 </head>
 <body>
+    <!-- Profile Picture Position Editor (Admin Section) -->
+    <div id="profile-editor" class="profile-editor hidden">
+        <div class="editor-panel">
+            <h3>Profile Picture Position Editor</h3>
+            <div class="editor-controls">
+                <div class="control-group">
+                    <label>Horizontal Position:</label>
+                    <input type="range" id="positionX" min="-50" max="50" value="0" step="1">
+                    <span id="positionXValue">0px</span>
+                </div>
+                <div class="control-group">
+                    <label>Vertical Position:</label>
+                    <input type="range" id="positionY" min="-50" max="50" value="0" step="1">
+                    <span id="positionYValue">0px</span>
+                </div>
+                <div class="control-group">
+                    <label>Scale:</label>
+                    <input type="range" id="scale" min="0.8" max="1.2" value="1" step="0.01">
+                    <span id="scaleValue">1.00</span>
+                </div>
+                <div class="control-group">
+                    <label>Object Position X:</label>
+                    <input type="range" id="objectPosX" min="0" max="100" value="50" step="1">
+                    <span id="objectPosXValue">50%</span>
+                </div>
+                <div class="control-group">
+                    <label>Object Position Y:</label>
+                    <input type="range" id="objectPosY" min="0" max="100" value="50" step="1">
+                    <span id="objectPosYValue">50%</span>
+                </div>
+                <div class="control-buttons">
+                    <button id="resetPosition">Reset</button>
+                    <button id="copyCSS">Copy CSS</button>
+                    <button id="closeEditor">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toggle Button for Admin Editor -->
+    <div id="admin-toggle" class="admin-toggle">
+        <button id="toggleEditor">⚙️</button>
+    </div>
+
     <!-- Loading Screen -->
     <div class="loading-screen" id="loading">
         <div class="loader"></div>
@@ -1548,6 +1713,111 @@
 
 ✨ "Code with purpose, test with precision, innovate with impact"
         `);
+
+        // Profile Picture Position Editor
+        const toggleEditor = document.getElementById('toggleEditor');
+        const profileEditor = document.getElementById('profile-editor');
+        const profileAvatar = document.querySelector('.profile-avatar');
+        const profileImage = document.querySelector('.profile-avatar img');
+
+        // Toggle Editor Visibility
+        toggleEditor.addEventListener('click', () => {
+            if (profileEditor.classList.contains('hidden')) {
+                profileEditor.classList.remove('hidden');
+                profileEditor.style.display = 'block';
+            } else {
+                profileEditor.classList.add('hidden');
+                profileEditor.style.display = 'none';
+            }
+        });
+
+        // Close Editor
+        document.getElementById('closeEditor').addEventListener('click', () => {
+            profileEditor.classList.add('hidden');
+            profileEditor.style.display = 'none';
+        });
+
+        // Reset Position
+        document.getElementById('resetPosition').addEventListener('click', () => {
+            document.getElementById('positionX').value = 0;
+            document.getElementById('positionY').value = 0;
+            document.getElementById('scale').value = 1;
+            document.getElementById('objectPosX').value = 50;
+            document.getElementById('objectPosY').value = 50;
+            
+            updateSliderValues();
+            updateProfilePictureCSS();
+        });
+
+        // Copy CSS
+        document.getElementById('copyCSS').addEventListener('click', () => {
+            const positionX = document.getElementById('positionX').value;
+            const positionY = document.getElementById('positionY').value;
+            const scale = document.getElementById('scale').value;
+            const objectPosX = document.getElementById('objectPosX').value;
+            const objectPosY = document.getElementById('objectPosY').value;
+
+            const css = `.profile-avatar {
+    transform: translate(${positionX}px, ${positionY}px) scale(${scale});
+}
+
+.profile-avatar img {
+    object-position: ${objectPosX}% ${objectPosY}%;
+}`;
+
+            navigator.clipboard.writeText(css).then(() => {
+                // Show success message
+                const button = document.getElementById('copyCSS');
+                const originalText = button.textContent;
+                button.textContent = 'Copied!';
+                button.style.background = 'var(--accent-emerald)';
+                
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.style.background = 'var(--accent-purple)';
+                }, 2000);
+            }).catch(() => {
+                alert('Failed to copy CSS. Please copy manually from the console.');
+                console.log('Profile Picture CSS:', css);
+            });
+        });
+
+        // Update Profile Picture CSS in Real-time
+        function updateProfilePictureCSS() {
+            const positionX = document.getElementById('positionX').value;
+            const positionY = document.getElementById('positionY').value;
+            const scale = document.getElementById('scale').value;
+            const objectPosX = document.getElementById('objectPosX').value;
+            const objectPosY = document.getElementById('objectPosY').value;
+
+            // Apply transforms to the container
+            profileAvatar.style.transform = `translate(${positionX}px, ${positionY}px) scale(${scale})`;
+            
+            // Apply object-position to the image
+            if (profileImage) {
+                profileImage.style.objectPosition = `${objectPosX}% ${objectPosY}%`;
+            }
+        }
+
+        // Update Slider Value Displays
+        function updateSliderValues() {
+            document.getElementById('positionXValue').textContent = document.getElementById('positionX').value + 'px';
+            document.getElementById('positionYValue').textContent = document.getElementById('positionY').value + 'px';
+            document.getElementById('scaleValue').textContent = document.getElementById('scale').value;
+            document.getElementById('objectPosXValue').textContent = document.getElementById('objectPosX').value + '%';
+            document.getElementById('objectPosYValue').textContent = document.getElementById('objectPosY').value + '%';
+        }
+
+        // Add event listeners for all range inputs
+        document.querySelectorAll('.control-group input[type="range"]').forEach(input => {
+            input.addEventListener('input', function() {
+                updateSliderValues();
+                updateProfilePictureCSS();
+            });
+        });
+
+        // Initialize slider values on page load
+        updateSliderValues();
     </script>
 </body>
 </html>
