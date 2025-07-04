@@ -383,13 +383,38 @@
             position: relative;
             overflow: hidden;
             border: 3px solid var(--glass-border);
+            /* Enhanced centering and image positioning */
+            flex-shrink: 0;
         }
 
         .profile-avatar img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            object-position: center center;
             border-radius: 50%;
+            /* Ensure perfect centering */
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            /* Smooth transitions */
+            transition: transform 0.3s ease, filter 0.3s ease;
+        }
+
+        .profile-avatar:hover img {
+            transform: translate(-50%, -50%) scale(1.05);
+            filter: brightness(1.1);
+        }
+
+        /* Fallback icon styling */
+        .profile-avatar i {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: var(--primary-950);
+            z-index: 1;
         }
 
         .profile-info h3 {
